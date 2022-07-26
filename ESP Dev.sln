@@ -1,0 +1,112 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseWheelDriver", "Armatron Base\Armatron Base.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Encoder-1.4.2", "Libraries\Encoder\1.4.2\Encoder\Encoder-1.4.2.vcxitems", "{451E9EE5-B163-4768-8E2F-ADC54CF0638F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PID-1.2.0", "Libraries\PID\1.2.0\PID\PID-1.2.0.vcxitems", "{CB5A3CD7-4D8F-4700-9892-63935153F6C6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flib", "flib\flib.vcxitems", "{CF3374C4-D664-4C71-89FE-1817CA12C954}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESP8266WiFi-1.0", "Libraries\ESP8266WiFi\1.0\ESP8266WiFi\ESP8266WiFi-1.0.vcxitems", "{9F19C9FD-0501-49AA-8DC1-2DE0B04873D2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EEPROM-1.0", "Libraries\EEPROM\1.0\EEPROM\EEPROM-1.0.vcxitems", "{4B1EA1B2-7F3E-4EEB-90F0-F70E45886C03}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flibTest", "flibTest\flibTest.vcxproj", "{2E919722-CFC0-42AA-9DE9-05DC4976182E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "esp8266-1.0", "Libraries\esp8266\1.0\esp8266\esp8266-1.0.vcxitems", "{8F4EF493-30F2-426C-93DF-F0C740539CF7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WiFi-2.0.0", "Libraries\WiFi\2.0.0\WiFi\WiFi-2.0.0.vcxitems", "{A64CA0EF-B29D-4F9E-8AC9-F03491DDC140}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SPIFFS-2.0.0", "Libraries\SPIFFS\2.0.0\SPIFFS\SPIFFS-2.0.0.vcxitems", "{B4886AED-B74A-42A0-814A-CFCFEA195BCD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESP32Encoder-0.9.1", "Libraries\ESP32Encoder\0.9.1\ESP32Encoder\ESP32Encoder-0.9.1.vcxitems", "{C03D2AEB-D2CF-416A-A43D-B8B74C168D1E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bolder_Flight_Systems_MPU9250-5.6.0", "Libraries\Bolder_Flight_Systems_MPU9250\5.6.0\Bolder_Flight_Systems_MPU9250\Bolder_Flight_Systems_MPU9250-5.6.0.vcxitems", "{1974E0F2-DAEE-4EF3-9EE3-B3DC01392DB4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MPU9250_WE-1.2.1", "Libraries\MPU9250_WE\1.2.1\MPU9250_WE\MPU9250_WE-1.2.1.vcxitems", "{2D5D2E1C-33E5-454E-B825-0D1B927E91E1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BasePowerManager", "BasePowerManager\BasePowerManager.vcxproj", "{476E6355-60E8-4DA9-8726-9F1CA4BF5899}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Adafruit_GFX_Library-1.10.14", "Libraries\Adafruit_GFX_Library\1.10.14\Adafruit_GFX_Library\Adafruit_GFX_Library-1.10.14.vcxitems", "{7AEE17E9-D2B5-407D-BC51-FE3D80963D1C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SPI-2.0.0", "Libraries\SPI\2.0.0\SPI\SPI-2.0.0.vcxitems", "{F74D5FE9-8538-4A13-B0BF-0BB10E3E93D1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Wire-2.0.0", "Libraries\Wire\2.0.0\Wire\Wire-2.0.0.vcxitems", "{F7A0D50D-3BCA-4EB0-BC4E-E54E03563D16}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "esp32-sh1106-oled-master-1.0.0", "Libraries\esp32-sh1106-oled-master\1.0.0\esp32-sh1106-oled-master\esp32-sh1106-oled-master-1.0.0.vcxitems", "{40651BF1-3568-496C-92C3-991B8E54E0C6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "U8g2-2.32.15", "Libraries\U8g2\2.32.15\U8g2\U8g2-2.32.15.vcxitems", "{AFCFEDC6-F0E1-4CE8-9692-48D48C447C33}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AsyncUDP-2.0.0", "Libraries\AsyncUDP\2.0.0\AsyncUDP\AsyncUDP-2.0.0.vcxitems", "{14F05324-DC66-40A8-AF62-CB4AF8FADFD0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESPAsyncWebServer-master-1.2.3", "Libraries\ESPAsyncWebServer-master\1.2.3\ESPAsyncWebServer-master\ESPAsyncWebServer-master-1.2.3.vcxitems", "{BFF74572-26C1-46FE-8150-2DB28425FFB4}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Libraries\AsyncUDP\2.0.0\AsyncUDP\AsyncUDP-2.0.0.vcxitems*{14f05324-dc66-40a8-af62-cb4af8fadfd0}*SharedItemsImports = 9
+		Libraries\Bolder_Flight_Systems_MPU9250\5.6.0\Bolder_Flight_Systems_MPU9250\Bolder_Flight_Systems_MPU9250-5.6.0.vcxitems*{1974e0f2-daee-4ef3-9ee3-b3dc01392db4}*SharedItemsImports = 9
+		Libraries\MPU9250_WE\1.2.1\MPU9250_WE\MPU9250_WE-1.2.1.vcxitems*{2d5d2e1c-33e5-454e-b825-0d1b927e91e1}*SharedItemsImports = 9
+		flib\flib.vcxitems*{2e919722-cfc0-42aa-9de9-05dc4976182e}*SharedItemsImports = 4
+		Libraries\SPIFFS\2.0.0\SPIFFS\SPIFFS-2.0.0.vcxitems*{2e919722-cfc0-42aa-9de9-05dc4976182e}*SharedItemsImports = 4
+		Libraries\WiFi\2.0.0\WiFi\WiFi-2.0.0.vcxitems*{2e919722-cfc0-42aa-9de9-05dc4976182e}*SharedItemsImports = 4
+		Libraries\esp32-sh1106-oled-master\1.0.0\esp32-sh1106-oled-master\esp32-sh1106-oled-master-1.0.0.vcxitems*{40651bf1-3568-496c-92c3-991b8e54e0c6}*SharedItemsImports = 9
+		Libraries\Encoder\1.4.2\Encoder\Encoder-1.4.2.vcxitems*{451e9ee5-b163-4768-8e2f-adc54cf0638f}*SharedItemsImports = 9
+		flib\flib.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
+		Libraries\Adafruit_GFX_Library\1.10.14\Adafruit_GFX_Library\Adafruit_GFX_Library-1.10.14.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
+		Libraries\AsyncUDP\2.0.0\AsyncUDP\AsyncUDP-2.0.0.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
+		Libraries\esp32-sh1106-oled-master\1.0.0\esp32-sh1106-oled-master\esp32-sh1106-oled-master-1.0.0.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
+		Libraries\ESPAsyncWebServer-master\1.2.3\ESPAsyncWebServer-master\ESPAsyncWebServer-master-1.2.3.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
+		Libraries\SPIFFS\2.0.0\SPIFFS\SPIFFS-2.0.0.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
+		Libraries\SPI\2.0.0\SPI\SPI-2.0.0.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
+		Libraries\U8g2\2.32.15\U8g2\U8g2-2.32.15.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
+		Libraries\WiFi\2.0.0\WiFi\WiFi-2.0.0.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
+		Libraries\Wire\2.0.0\Wire\Wire-2.0.0.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
+		Libraries\EEPROM\1.0\EEPROM\EEPROM-1.0.vcxitems*{4b1ea1b2-7f3e-4eeb-90f0-f70e45886c03}*SharedItemsImports = 9
+		Libraries\Adafruit_GFX_Library\1.10.14\Adafruit_GFX_Library\Adafruit_GFX_Library-1.10.14.vcxitems*{7aee17e9-d2b5-407d-bc51-fe3d80963d1c}*SharedItemsImports = 9
+		Libraries\esp8266\1.0\esp8266\esp8266-1.0.vcxitems*{8f4ef493-30f2-426c-93df-f0c740539cf7}*SharedItemsImports = 9
+		Libraries\ESP8266WiFi\1.0\ESP8266WiFi\ESP8266WiFi-1.0.vcxitems*{9f19c9fd-0501-49aa-8dc1-2de0b04873d2}*SharedItemsImports = 9
+		Libraries\WiFi\2.0.0\WiFi\WiFi-2.0.0.vcxitems*{a64ca0ef-b29d-4f9e-8ac9-f03491ddc140}*SharedItemsImports = 9
+		Libraries\U8g2\2.32.15\U8g2\U8g2-2.32.15.vcxitems*{afcfedc6-f0e1-4ce8-9692-48d48c447c33}*SharedItemsImports = 9
+		Libraries\SPIFFS\2.0.0\SPIFFS\SPIFFS-2.0.0.vcxitems*{b4886aed-b74a-42a0-814a-cfcfea195bcd}*SharedItemsImports = 9
+		Libraries\ESPAsyncWebServer-master\1.2.3\ESPAsyncWebServer-master\ESPAsyncWebServer-master-1.2.3.vcxitems*{bff74572-26c1-46fe-8150-2db28425ffb4}*SharedItemsImports = 9
+		Libraries\ESP32Encoder\0.9.1\ESP32Encoder\ESP32Encoder-0.9.1.vcxitems*{c03d2aeb-d2cf-416a-a43d-b8b74c168d1e}*SharedItemsImports = 9
+		flib\flib.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		Libraries\ESP32Encoder\0.9.1\ESP32Encoder\ESP32Encoder-0.9.1.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		Libraries\MPU9250_WE\1.2.1\MPU9250_WE\MPU9250_WE-1.2.1.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		Libraries\PID\1.2.0\PID\PID-1.2.0.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		Libraries\SPIFFS\2.0.0\SPIFFS\SPIFFS-2.0.0.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		Libraries\WiFi\2.0.0\WiFi\WiFi-2.0.0.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		Libraries\PID\1.2.0\PID\PID-1.2.0.vcxitems*{cb5a3cd7-4d8f-4700-9892-63935153f6c6}*SharedItemsImports = 9
+		flib\flib.vcxitems*{cf3374c4-d664-4c71-89fe-1817ca12c954}*SharedItemsImports = 9
+		Libraries\SPI\2.0.0\SPI\SPI-2.0.0.vcxitems*{f74d5fe9-8538-4a13-b0bf-0bb10e3e93d1}*SharedItemsImports = 9
+		Libraries\Wire\2.0.0\Wire\Wire-2.0.0.vcxitems*{f7a0d50d-3bca-4eb0-bc4e-e54e03563d16}*SharedItemsImports = 9
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{2E919722-CFC0-42AA-9DE9-05DC4976182E}.Debug|x86.ActiveCfg = Debug|Win32
+		{2E919722-CFC0-42AA-9DE9-05DC4976182E}.Debug|x86.Build.0 = Debug|Win32
+		{2E919722-CFC0-42AA-9DE9-05DC4976182E}.Release|x86.ActiveCfg = Release|Win32
+		{2E919722-CFC0-42AA-9DE9-05DC4976182E}.Release|x86.Build.0 = Release|Win32
+		{476E6355-60E8-4DA9-8726-9F1CA4BF5899}.Debug|x86.ActiveCfg = Debug|Win32
+		{476E6355-60E8-4DA9-8726-9F1CA4BF5899}.Debug|x86.Build.0 = Debug|Win32
+		{476E6355-60E8-4DA9-8726-9F1CA4BF5899}.Release|x86.ActiveCfg = Release|Win32
+		{476E6355-60E8-4DA9-8726-9F1CA4BF5899}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {925BFA74-5440-4011-BA45-BE46D5CA74F1}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{cf3374c4-d664-4c71-89fe-1817ca12c954}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)fDebugUtils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)fGPIOActionSystem.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)fGUI.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)fSerialParser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)fWiFiManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)fStorageUtils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)fWiFiServerActionSystem.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)fDebugUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)fGPIOActionSystem.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)fGUI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)flib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)fSerialParser.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)fWiFiManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)fStorageUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)fWiFiServerActionSystem.h" />
+  </ItemGroup>
+</Project>

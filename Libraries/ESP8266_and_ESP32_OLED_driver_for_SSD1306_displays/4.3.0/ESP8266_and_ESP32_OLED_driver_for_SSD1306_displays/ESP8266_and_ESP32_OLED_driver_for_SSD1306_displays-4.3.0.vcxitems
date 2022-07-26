@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding ="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" >
+  <PropertyGroup Label="Globals" >
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{de87e0c9-01a4-47ed-88c1-38e9dbb1ef3b}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\OLEDDisplay.cpp" />
+<ClCompile Include="$(MSBuildThisFileDirectory)src\OLEDDisplayUi.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\OLEDDisplay.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)src\OLEDDisplayFonts.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)src\OLEDDisplayUi.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)src\SH1106.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)src\SH1106Brzo.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)src\SH1106Spi.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)src\SH1106Wire.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)src\SSD1306.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)src\SSD1306Brzo.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)src\SSD1306I2C.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)src\SSD1306Spi.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)src\SSD1306Wire.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)CMakeLists.txt" />
+<Text Include="$(MSBuildThisFileDirectory)keywords.txt" />
+<Text Include="$(MSBuildThisFileDirectory)library.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)component.mk" />
+<None Include="$(MSBuildThisFileDirectory)CONTRIBUTING.md" />
+<None Include="$(MSBuildThisFileDirectory)library.json" />
+<None Include="$(MSBuildThisFileDirectory)license" />
+<None Include="$(MSBuildThisFileDirectory)platformio.ini" />
+<None Include="$(MSBuildThisFileDirectory)README.md" />
+<None Include="$(MSBuildThisFileDirectory)README_GEOMETRY_64_48.md" />
+<None Include="$(MSBuildThisFileDirectory)UPGRADE-3.0.md" />
+<None Include="$(MSBuildThisFileDirectory)UPGRADE-4.0.md" />
+  </ItemGroup>
+</Project>
