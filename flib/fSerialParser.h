@@ -36,7 +36,7 @@ public:
 
         available = true;
 
-        xTaskCreate(runTask, "fSerialParser", 1000, NULL, 0, &taskHandle);
+        xTaskCreate(runTask, "fSerialParser", 20000, NULL, 0, &taskHandle);
     }
 
     static void AddCommand(String name, void (*run)()) {

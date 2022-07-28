@@ -1,10 +1,10 @@
 #define USE_FGUI
 #define BUZZER_PIN 19
 #define FDEBUG
-#define FSTORAGE_DEBUG_VERBOSE
 //#define WIFI_ENABLE
 
 #include "flib.h"
+#include "fComms.h"
 
 #include <ESPAsyncWebServer.h>
 
@@ -25,10 +25,10 @@ void setup() {
     pinMode(25, OUTPUT);
     digitalWrite(25, LOW);
 
-    fWiFiActions::AddCommand("enable_power", &enablePower);
-    fWiFiActions::AddCommand("disable_power", &disablePower);
-    fWiFiActions::AddCommand("disable_vcheck", &disableVoltageChk);
-    fWiFiActions::AddCommand("shutdown", &Shutdown);
+    fREST::AddCommand("enable_power", &enablePower);
+    fREST::AddCommand("disable_power", &disablePower);
+    fREST::AddCommand("disable_vcheck", &disableVoltageChk);
+    fREST::AddCommand("shutdown", &Shutdown);
 
     fGPIOActionSystem::AddAction(18, &shutdownBtn, true);
     fSerialParser::AddCommand("enable_power", &enablePower);
@@ -36,7 +36,33 @@ void setup() {
     fSerialParser::AddCommand("disable_vcheck", &disableVoltageChk);
     fSerialParser::AddCommand("shutdown", &Shutdown);
 
+    fComms::AddCommand("enable_power", [](String args) {
+        enablePower();
+        });
+
+    fComms::AddCommand("disable_power", [](String args) {
+        disablePower();
+        });
+
+    fComms::AddCommand("disable_vcheck", [](String args) {
+        disableVoltageChk();
+        });
+
+    fComms::AddCommand("get_voltage", [](String args) {
+        double voltage5v = (analogReadMilliVolts(32) * 11.0 / 1000.0) - 0.3;
+        double voltage12v = (analogReadMilliVolts(35) * 11.0 / 1000.0) - 0.3;
+        double voltage24v = (analogReadMilliVolts(34) * 11.0 / 1000.0) - 0.3;
+
+        fComms::TCPSend("5v=" + String(voltage5v) + ",12v=" + String(voltage12v) + ",24v=" + String(voltage24v) + "\r");
+        });
+
+    fComms::AddCommand("shutdown", [](String args) {
+        Shutdown();
+        });
+
     flib_Startup();
+
+    fComms::StartAsTask("POWERMGR");
     //srv.begin();
 }
 
@@ -48,7 +74,7 @@ void enablePower() {
 
     fDebugUtils::beep();
     fGUI::StartMenu();
-
+    fDebugUtils::success_background();
     for (int i = 0; i < 5; i++) {
         fGUI::SetFont(u8g2_font_10x20_tr, true);
 
@@ -121,6 +147,7 @@ void disablePower() {
     fDebugUtils::beep();
     fGUI::StartMenu();
 
+    fDebugUtils::shutdown_background();
     for (int i = 0; i < 5; i++) {
         fGUI::SetFont(u8g2_font_10x20_tr, true);
 
@@ -175,7 +202,7 @@ void shutdownBtn() {
 
 void Shutdown() {
     fGUI::StartMenu();
-    fDebugUtils::alert_beep();
+    fDebugUtils::shutdown_background();
 
     for (int i = 0; i < 5; i++) {
         fGUI::SetFont(u8g2_font_10x20_tr, true);
@@ -275,14 +302,16 @@ void loop() {
 
     fGUI::SetFont(u8g2_font_8x13_tr);
 
-    fGUI::PrintCentered("5V  : " + String(voltage5v) + "v ON", 64, 22);
-    fGUI::PrintCentered("12V : " + String(isPowerOn ? (String(voltage12v) + "v ON") : "OFF"), 64, 37);
-    fGUI::PrintCentered("24V : " + String(false ? (String(voltage24v) + "v ON") : "OFF"), 64, 52);
+    fGUI::PrintCentered("5V  : " + String(voltage5v) + "v ON", 64, 17);
+    fGUI::PrintCentered("12V : " + String(isPowerOn ? (String(voltage12v) + "v ON") : "OFF"), 64, 32);
+    fGUI::PrintCentered("24V : " + String(false ? (String(voltage24v) + "v ON") : "OFF"), 64, 47);
 
     fGUI::SetFont(u8g2_font_3x5im_tr);
 
     if(fWiFiManager::GetStatus() != "Not started")
-        fGUI::Print(fWiFiManager::GetStatus(), 2, 62);
+        fGUI::Print(fWiFiManager::GetStatus(), 2, 64);
+
+    fGUI::Print(fComms::GetStatus(), 2, 56);
 
     fGUI::Flush();
     delay(50);

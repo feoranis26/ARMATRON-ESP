@@ -7,7 +7,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)fSerialParser.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)fGUI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)fGPIOActionSystem.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)fWiFiServerActionSystem.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)fREST.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)fComms.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)fDebugUtils.h" />
@@ -16,8 +17,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)fSerialParser.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)fGUI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)fGPIOActionSystem.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)fWiFiServerActionSystem.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)fREST.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)flib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)fComms.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="$(MSBuildThisFileDirectory)readme.txt" />

@@ -91,6 +91,19 @@ public:
 #endif
     }
 
+    static void shutdown_beep() {
+#ifdef BUZZER_PIN
+        ledcAttachPin(BUZZER_PIN, 1);
+        ledcWriteTone(1, 1000);
+        delay(250);
+        ledcWriteTone(1, 750);
+        delay(250);
+        ledcWriteTone(1, 500);
+        delay(375);
+        ledcDetachPin(BUZZER_PIN);
+#endif
+    }
+
     static void error_tone() {
 #ifdef BUZZER_PIN
         ledcAttachPin(BUZZER_PIN, 1);
@@ -102,6 +115,51 @@ public:
 #endif
     }
 
+    static void beep_background() {
+        xTaskCreate(beep_bgtask, "beep", 1000, NULL, 1, NULL);
+    }
+
+    static void beep_bgtask(void* arg) {
+        beep();
+
+        vTaskDelete(NULL);
+        delay(100);
+    }
+
+    static void alert_background() {
+        xTaskCreate(alert_bgtask, "beep", 1000, NULL, 1, NULL);
+    }
+
+    static void alert_bgtask(void* arg) {
+        alert_beep();
+
+        vTaskDelete(NULL);
+        delay(100);
+    }
+
+    static void success_background() {
+        xTaskCreate(success_bgtask, "beep", 1000, NULL, 1, NULL);
+    }
+
+    static void success_bgtask(void* arg) {
+        success_beep();
+
+        vTaskDelete(NULL);
+        delay(100);
+    }
+
+    static void shutdown_background() {
+        xTaskCreate(shutdown_bgtask, "beep", 1000, NULL, 1, NULL);
+    }
+
+    static void shutdown_bgtask(void* arg) {
+        shutdown_beep();
+
+        vTaskDelete(NULL);
+        delay(100);
+    }
+
+    TaskHandle_t runningTask;
     //static String lastLogMesage;
 };
 

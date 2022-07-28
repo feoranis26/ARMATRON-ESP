@@ -22,8 +22,7 @@ struct netif;
 typedef std::function<void(AsyncUDPPacket& packet)> AuPacketHandlerFunction;
 typedef std::function<void(void * arg, AsyncUDPPacket& packet)> AuPacketHandlerFunctionWithArg;
 
-class AsyncUDPMessage : public Print
-{
+class AsyncUDPMessage : public Print {
 protected:
     uint8_t *_buffer;
     size_t _index;
@@ -43,8 +42,7 @@ public:
     }
 };
 
-class AsyncUDPPacket : public Stream
-{
+class AsyncUDPPacket : public Stream {
 protected:
     AsyncUDP *_udp;
     pbuf *_pb;
@@ -90,8 +88,7 @@ public:
     size_t write(uint8_t data);
 };
 
-class AsyncUDP : public Print
-{
+class AsyncUDP : public Print {
 protected:
     udp_pcb *_pcb;
     //xSemaphoreHandle _lock;

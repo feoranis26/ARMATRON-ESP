@@ -17,15 +17,17 @@
     <Text Include="$(MSBuildThisFileDirectory)readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)fComms.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)fDebugUtils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)fGPIOActionSystem.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)fGUI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)fSerialParser.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)fWiFiManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)fStorageUtils.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)fWiFiServerActionSystem.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)fREST.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)fComms.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)fDebugUtils.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)fGPIOActionSystem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)fGUI.h" />
@@ -33,6 +35,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)fSerialParser.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)fWiFiManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)fStorageUtils.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)fWiFiServerActionSystem.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)fREST.h" />
   </ItemGroup>
 </Project>

@@ -7,7 +7,7 @@
 #include "fSerialParser.h"
 #include "fWiFiManager.h"
 #include "fGPIOActionSystem.h"
-#include "fWiFiServerActionSystem.h"
+#include "fREST.h"
 
 void flib_Startup() {
     fDebugUtils::startup_beep();
@@ -69,8 +69,8 @@ void flib_Startup() {
 
         fGUI::SetFont(u8g2_font_5x7_tr);
         fGUI::PrintCentered("Setting up AP", 64, 32);
-        //fGUI::PrintCentered("SSID: ESP_ACCESSPOINT", 64, 48);
-        //fGUI::PrintCentered("PASS: 123456", 64, 56);
+        fGUI::PrintCentered("SSID: \"" + fWiFiManager::GetHostname() + "\"", 64, 48);
+        fGUI::PrintCentered("PASS: \"" + fWiFiManager::GetPass() + "\"", 64, 56);
         fGUI::Flush();
 
         fDebugUtils::error_tone();
@@ -80,7 +80,7 @@ void flib_Startup() {
         delay(5000);
     }
 
-    fWiFiActions::Begin();
+    fREST::Begin();
 
     fGUI::SetFont(u8g2_font_10x20_tr);
     fGUI::PrintCentered("Init done!", 64, 16);

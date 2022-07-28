@@ -108,6 +108,18 @@ public:
         return isdone;
     }
 
+    static String GetHostname() {
+        return hostname;
+    }
+
+    static String GetSSID() {
+        return ssid;
+    }
+
+    static String GetPass() {
+        return pass;
+    }
+
 private:
     static TaskHandle_t StartTask;
 
@@ -124,6 +136,8 @@ private:
             saveData();
             request->send(200);
             });
+
+        server.begin();
     }
 
     static void saveData() {

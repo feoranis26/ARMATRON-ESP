@@ -25,7 +25,7 @@ public:
     void (*execute)();
     TaskHandle_t taskHandle;
 };
-class fWiFiActions {
+class fREST {
 public:
     static void Begin() {
         server.on("/run", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -38,7 +38,7 @@ public:
                 if (commands[i].name == request->getParam("action")->value()) {
                     currentCommand = &(commands[i]);
 
-                    xTaskCreate(runCommand, "fWiFiActionsCommand", 20000, NULL, 1, &handle);
+                    xTaskCreate(runCommand, "fRESTCommand", 20000, NULL, 1, &handle);
                     request->send(200);
                 }
             }
