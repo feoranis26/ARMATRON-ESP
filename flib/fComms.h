@@ -130,7 +130,7 @@ private:
             else {
                 //String dat = "OK";
                 //tcpClient.add(dat.c_str(), sizeof(dat.c_str()));
-                status = "OK! IP: " + String(connected);
+                status = "OK!";
                 delay(100);
             }
 
@@ -217,6 +217,8 @@ private:
     }
 
     static void OnData(String data) {
+        fGUI::ResetBurnInProtectionTimeout();
+
         String command;
         String args;
 

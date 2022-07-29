@@ -48,6 +48,7 @@ public:
 
     static void runCommand(void *param) {
 #ifdef USE_FGUI
+        fGUI::ResetBurnInProtectionTimeout();
         fGUI::StartMenu();
         fGUI::Clear(true);
         fGUI::SetFont(u8g2_font_5x7_tr, true);
@@ -69,30 +70,6 @@ public:
         fDebugUtils::Log("add cmd name=" + name);
         commands[numCommands] = WiFiCommand(name, run);
         numCommands++;
-    }
-
-    static void parseSerial() {
-        if (!Serial.available())
-            return;
-
-        String read = Serial.readStringUntil(' ');
-        if (read.endsWith("\n"))
-            read.substring(0, read.length() - 2);
-
-        fDebugUtils::Log(read);
-
-        for (int i = 0; i < numCommands; i++) {
-            if (commands[i].name == read) {
-#ifdef USE_FGUI
-                fGUI::Clear();
-                fGUI::SetFont(u8g2_font_5x7_tr);
-                fGUI::PrintCentered("Running " + commands[i].name, 64, 32);
-                fGUI::Flush();
-#endif
-                commands[i].execute();
-                break;
-            }
-        }
     }
 
     static bool available;
