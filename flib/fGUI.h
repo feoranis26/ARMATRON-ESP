@@ -112,6 +112,7 @@ public:
     }
 
     static void StartMenu() {
+        ResetBurnInProtectionTimeout();
         inMenu = true;
     }
 

@@ -3,9 +3,9 @@
 #define USE_FGUI
 
 #include <ESP32Encoder.h>
-#include <PID_v1.h>
 #include <MPU9250_WE.h>
 #include <Wire.h>
+#include <QuickPID.h>
 
 #include "flib.h"
 #include "fComms.h"
@@ -22,6 +22,21 @@ long currentPos;
 double xspeed;
 double zspeed;
 double thspeed;
+
+double xpos;
+double zpos;
+double heading;
+double gyroHeading;
+long lastMS;
+
+bool holdHeading = false;
+double holdHeadingP = 0.1;
+double headingTarget = 0;
+
+bool absolute_commands = false;
+
+const double rot2meters = 2.4 / 77; //odom, measured
+const double meters2rot = 2 / 0.355;//commands, calculated
 
 /*
 void encoderInterruptAFalling() {
@@ -41,7 +56,7 @@ void encoderInterruptARising() {
 
 class WheelAssembly {
 public:
-    WheelAssembly(int encA, int encB, int motorA, int motorB) : pid(&Input, &Output, &Setpoint, 0.05, 0.25, 0.00075, DIRECT), encoder() {
+    WheelAssembly(int encA, int encB, int motorA, int motorB) : pid(&Input, &Output, &Setpoint, 0.05, 0.1, 0.000075, QuickPID::Action::direct), encoder() {
         encoderPinA = encA;
         encoderPinB = encB;
 
@@ -53,8 +68,8 @@ public:
         //ESP32Encoder::useInternalWeakPullResistors = UP;
         encoder.attachHalfQuad(encoderPinA, encoderPinB);
 
-        pid.SetMode(AUTOMATIC);
         pid.SetOutputLimits(-255, 255);
+        pid.SetMode(QuickPID::Control::automatic);
     }
 
     void Drive() {
@@ -71,14 +86,18 @@ public:
         Setpoint = TargetRPS * 823.1;
         pid.Compute();
 
-        if (Setpoint != 0) {
-            if (Setpoint > 0) {
+        if (abs(Output) > 10) {
+            if (Setpoint > 0 && Output > 0) {
                 analogWrite(motorPinA, 255 - Output);
                 analogWrite(motorPinB, 255);
             }
-            else {
+            else if (Setpoint < 0 && Output < 0) {
                 analogWrite(motorPinB, 255 + Output);
                 analogWrite(motorPinA, 255);
+            }
+            else {
+                analogWrite(motorPinA, 255);
+                analogWrite(motorPinB, 255);
             }
         }
         else {
@@ -105,9 +124,9 @@ public:
 
     double RPS, TargetRPS;
 private:
-    PID pid;
+    QuickPID pid;
     ESP32Encoder encoder;
-    double Setpoint, Input, Output;
+    float Setpoint, Input, Output;
 
     int encoderPinA, encoderPinB;
     int motorPinA, motorPinB;
@@ -140,6 +159,27 @@ void setup() {
         fComms::TCPSend("W4: " + String(wheel4.GetPosition()));
         });
 
+    fComms::AddCommand("hold_heading", [](String param) {
+        holdHeading = true;
+        headingTarget = gyroHeading;
+        });
+
+    fComms::AddCommand("no_hold_heading", [](String param) {
+        holdHeading = false;
+        });
+
+    fComms::AddCommand("absolute_mode", [](String param) {
+        absolute_commands = true;
+        });
+
+    fComms::AddCommand("relative_mode", [](String param) {
+        absolute_commands = false;
+        });
+
+    fComms::AddCommand("get_heading", [](String param) {
+        fComms::TCPSend("Heading: " + String(gyroHeading));
+        });
+
     fComms::AddCommand("set_speed", [](String data) {
         String command;
         String args;
@@ -168,6 +208,43 @@ void setup() {
             fComms::TCPSend("set th speed: " + String(thspeed));
         }
 
+        });
+
+    fComms::AddCommand("set_speed_all", [](String data) {
+        String read;
+        int i;
+
+        read = "";
+        for (i = 0; i < data.length(); i++) {
+            if (data[i] == ' ') {
+                xspeed = atof(read.c_str());
+                break;
+            }
+
+            read += data[i];
+        }
+
+        i++;
+        read = "";
+        for (; i < data.length(); i++) {
+            if (data[i] == ' ') {
+                zspeed = atof(read.c_str());
+                break;
+            }
+
+            read += data[i];
+        }
+
+        i++;
+        read = "";
+        for (; i < data.length(); i++) {
+            if (data[i] == ' ') {
+                thspeed = atof(read.c_str());
+                break;
+            }
+
+            read += data[i];
+        }
         });
 
     fComms::AddCommand("set_pid", [](String data) {
@@ -269,9 +346,7 @@ void calibGyro() {
 
     fDebugUtils::Log("Calibrating IMU!");
     myMPU9250.autoOffsets();
-
-    long startms = millis();
-    float voltage12v = (analogReadMilliVolts(35) * 11.0 / 1000.0) - 0.3;
+    gyroHeading = 0;
 
     fGUI::SetFont(u8g2_font_6x10_tr, true);
     fGUI::PrintCentered("CALIB DONE", 64, 16, true);
@@ -291,17 +366,21 @@ void setSpeeds() {
 }
 
 void updateSpeeds() {
-    wheel1.TargetRPS = xspeed - zspeed - thspeed;
-    wheel2.TargetRPS = -xspeed - zspeed + thspeed;
-    wheel3.TargetRPS = xspeed - zspeed + thspeed;
-    wheel4.TargetRPS = -xspeed - zspeed - thspeed;
-}
+    double xs = xspeed;
+    double zs = zspeed;
 
-double xpos;
-double zpos;
-double heading;
-double gyroHeading;
-long lastMS;
+    if (absolute_commands) {
+        double heading_radians = gyroHeading * PI / 180;
+
+        xs = cos(heading_radians) * xspeed + sin(heading_radians) * zspeed;
+        zs = cos(heading_radians) * zspeed + sin(-heading_radians) * xspeed;
+    }
+
+    wheel1.TargetRPS = (xs + zs) * meters2rot - thspeed;
+    wheel2.TargetRPS = (-xs + zs) * meters2rot + thspeed;
+    wheel3.TargetRPS = (xs + zs) * meters2rot + thspeed;
+    wheel4.TargetRPS = (-xs + zs) * meters2rot - thspeed;
+}
 
 void getSpeeds() {
     double xspeed = wheel1.RPS + wheel3.RPS - wheel2.RPS - wheel4.RPS;
@@ -319,7 +398,7 @@ void Odometry() {
     long time = millis();
 
     double dX = wheel1.RPS + wheel3.RPS - wheel2.RPS - wheel4.RPS;
-    double dZ = -(wheel1.RPS + wheel2.RPS + wheel3.RPS + wheel4.RPS);
+    double dZ = (wheel1.RPS + wheel2.RPS + wheel3.RPS + wheel4.RPS);
     double dT = (double)(time - lastMS) / 1000;
     lastMS = time;
 
@@ -341,12 +420,19 @@ void Odometry() {
 
     gyroHeading += abs(gyroSpeed) > gyroDeadzone ? gyroDelta : 0;
 
-    xpos += ((sin(heading) * dX) + (cos(heading) * dZ)) * dT;
-    zpos += ((sin(heading) * dZ) + (cos(heading) * dX)) * dT;
+    double heading_radians = gyroHeading * PI / 180;
+
+    zpos += ((sin(heading_radians) * dX) + (cos(heading_radians) * dZ)) * dT * rot2meters;
+    xpos += (-(sin(heading_radians) * dZ) + (cos(heading_radians) * dX)) * dT * rot2meters;
 }
 
 void OdomDriveTask(void* param) {
     while (true) {
+        if (holdHeading && abs(headingTarget - gyroHeading) > 5)
+            thspeed = (headingTarget - gyroHeading) * holdHeadingP;
+        else if (holdHeading)
+            thspeed = 0;
+
         wheel1.Drive();
         wheel2.Drive();
         wheel3.Drive();
@@ -388,5 +474,11 @@ void loop() {
     fGUI::Print(fComms::GetStatus(), 2, 56);
 
     fGUI::Flush();
+
+    fComms::TCPSend("heading: " + String(gyroHeading));
+    fComms::TCPSend("absolute_positioning: " + String(absolute_commands));
+    fComms::TCPSend("hold_heading: " + String(holdHeading));
+    fComms::TCPSend("position: " + String(xpos) + ", " + String(zpos));
+
     delay(50);
 }

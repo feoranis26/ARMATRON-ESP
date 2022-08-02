@@ -33,16 +33,16 @@ public:
             String data;
 
             for (int i = 0; i < packet.length(); i++)
-                if((char)packet.data()[i] != '\r')
+                if ((char)packet.data()[i] != '\r')
                     data += (char)packet.data()[i];
 
             fDebugUtils::Log("[fComms] UDP Packet from" + String(packet.remoteIP()) + ", :" + data);
-            UDPSend("RECV " + data, packet.remoteIP());
+            UDPSend("RECV " + data + "\r", packet.remoteIP());
 
             OnData(data);
 
-            if (data == "CONNECT") {
-                UDPSend("OK\r", packet.remoteIP());
+            if (data.startsWith("CONNECT")) {
+                UDPSend("OK CONNECTING\r", packet.remoteIP());
 
                 TryConnectTo(packet.remoteIP());
             }
@@ -110,7 +110,8 @@ public:
     }
 
     static void TCPSend(String data) {
-        tcpClient.write(data.c_str(), data.length());
+        if (tcpClient.connected())
+            tcpClient.write((data + "\r").c_str(), (data + "\r").length());
     }
 
 private:
@@ -217,8 +218,6 @@ private:
     }
 
     static void OnData(String data) {
-        fGUI::ResetBurnInProtectionTimeout();
-
         String command;
         String args;
 
@@ -235,12 +234,14 @@ private:
 
         for (int i = 0; i < numCommands; i++) {
             if (commands[i].name == command) {
+                /*
 #ifdef USE_FGUI
                 fGUI::Clear();
                 fGUI::SetFont(u8g2_font_5x7_tr);
                 fGUI::PrintCentered("Running " + commands[i].name, 64, 32);
                 fGUI::Flush();
 #endif
+                */
                 commands[i].execute(args);
                 break;
             }

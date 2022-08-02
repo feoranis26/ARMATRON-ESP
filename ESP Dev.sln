@@ -45,6 +45,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AsyncUDP-2.0.0", "Libraries
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESPAsyncWebServer-master-1.2.3", "Libraries\ESPAsyncWebServer-master\1.2.3\ESPAsyncWebServer-master\ESPAsyncWebServer-master-1.2.3.vcxitems", "{BFF74572-26C1-46FE-8150-2DB28425FFB4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuickPID-3.1.2", "Libraries\QuickPID\3.1.2\QuickPID\QuickPID-3.1.2.vcxitems", "{826CAB63-39B0-4E7A-9F3D-2DEE88F7236F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Libraries\AsyncUDP\2.0.0\AsyncUDP\AsyncUDP-2.0.0.vcxitems*{14f05324-dc66-40a8-af62-cb4af8fadfd0}*SharedItemsImports = 9
@@ -67,6 +69,7 @@ Global
 		Libraries\Wire\2.0.0\Wire\Wire-2.0.0.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
 		Libraries\EEPROM\1.0\EEPROM\EEPROM-1.0.vcxitems*{4b1ea1b2-7f3e-4eeb-90f0-f70e45886c03}*SharedItemsImports = 9
 		Libraries\Adafruit_GFX_Library\1.10.14\Adafruit_GFX_Library\Adafruit_GFX_Library-1.10.14.vcxitems*{7aee17e9-d2b5-407d-bc51-fe3d80963d1c}*SharedItemsImports = 9
+		Libraries\QuickPID\3.1.2\QuickPID\QuickPID-3.1.2.vcxitems*{826cab63-39b0-4e7a-9f3d-2dee88f7236f}*SharedItemsImports = 9
 		Libraries\esp8266\1.0\esp8266\esp8266-1.0.vcxitems*{8f4ef493-30f2-426c-93df-f0c740539cf7}*SharedItemsImports = 9
 		Libraries\ESP8266WiFi\1.0\ESP8266WiFi\ESP8266WiFi-1.0.vcxitems*{9f19c9fd-0501-49aa-8dc1-2de0b04873d2}*SharedItemsImports = 9
 		Libraries\WiFi\2.0.0\WiFi\WiFi-2.0.0.vcxitems*{a64ca0ef-b29d-4f9e-8ac9-f03491ddc140}*SharedItemsImports = 9
@@ -79,6 +82,7 @@ Global
 		Libraries\ESPAsyncWebServer-master\1.2.3\ESPAsyncWebServer-master\ESPAsyncWebServer-master-1.2.3.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
 		Libraries\MPU9250_WE\1.2.1\MPU9250_WE\MPU9250_WE-1.2.1.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
 		Libraries\PID\1.2.0\PID\PID-1.2.0.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		Libraries\QuickPID\3.1.2\QuickPID\QuickPID-3.1.2.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
 		Libraries\SPIFFS\2.0.0\SPIFFS\SPIFFS-2.0.0.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
 		Libraries\U8g2\2.32.15\U8g2\U8g2-2.32.15.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
 		Libraries\WiFi\2.0.0\WiFi\WiFi-2.0.0.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
@@ -88,20 +92,28 @@ Global
 		Libraries\Wire\2.0.0\Wire\Wire-2.0.0.vcxitems*{f7a0d50d-3bca-4eb0-bc4e-e54e03563d16}*SharedItemsImports = 9
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Any CPU.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{2E919722-CFC0-42AA-9DE9-05DC4976182E}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{2E919722-CFC0-42AA-9DE9-05DC4976182E}.Debug|x86.ActiveCfg = Debug|Win32
 		{2E919722-CFC0-42AA-9DE9-05DC4976182E}.Debug|x86.Build.0 = Debug|Win32
+		{2E919722-CFC0-42AA-9DE9-05DC4976182E}.Release|Any CPU.ActiveCfg = Release|Win32
 		{2E919722-CFC0-42AA-9DE9-05DC4976182E}.Release|x86.ActiveCfg = Release|Win32
 		{2E919722-CFC0-42AA-9DE9-05DC4976182E}.Release|x86.Build.0 = Release|Win32
+		{476E6355-60E8-4DA9-8726-9F1CA4BF5899}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{476E6355-60E8-4DA9-8726-9F1CA4BF5899}.Debug|x86.ActiveCfg = Debug|Win32
 		{476E6355-60E8-4DA9-8726-9F1CA4BF5899}.Debug|x86.Build.0 = Debug|Win32
+		{476E6355-60E8-4DA9-8726-9F1CA4BF5899}.Release|Any CPU.ActiveCfg = Release|Win32
 		{476E6355-60E8-4DA9-8726-9F1CA4BF5899}.Release|x86.ActiveCfg = Release|Win32
 		{476E6355-60E8-4DA9-8726-9F1CA4BF5899}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
