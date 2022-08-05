@@ -47,6 +47,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESPAsyncWebServer-master-1.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuickPID-3.1.2", "Libraries\QuickPID\3.1.2\QuickPID\QuickPID-3.1.2.vcxitems", "{826CAB63-39B0-4E7A-9F3D-2DEE88F7236F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoOTA-2.0.0", "Libraries\ArduinoOTA\2.0.0\ArduinoOTA\ArduinoOTA-2.0.0.vcxitems", "{B0A6D7A3-94E0-4704-B857-099BC27CACF4}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Libraries\AsyncUDP\2.0.0\AsyncUDP\AsyncUDP-2.0.0.vcxitems*{14f05324-dc66-40a8-af62-cb4af8fadfd0}*SharedItemsImports = 9
@@ -74,10 +76,12 @@ Global
 		Libraries\ESP8266WiFi\1.0\ESP8266WiFi\ESP8266WiFi-1.0.vcxitems*{9f19c9fd-0501-49aa-8dc1-2de0b04873d2}*SharedItemsImports = 9
 		Libraries\WiFi\2.0.0\WiFi\WiFi-2.0.0.vcxitems*{a64ca0ef-b29d-4f9e-8ac9-f03491ddc140}*SharedItemsImports = 9
 		Libraries\U8g2\2.32.15\U8g2\U8g2-2.32.15.vcxitems*{afcfedc6-f0e1-4ce8-9692-48d48c447c33}*SharedItemsImports = 9
+		Libraries\ArduinoOTA\2.0.0\ArduinoOTA\ArduinoOTA-2.0.0.vcxitems*{b0a6d7a3-94e0-4704-b857-099bc27cacf4}*SharedItemsImports = 9
 		Libraries\SPIFFS\2.0.0\SPIFFS\SPIFFS-2.0.0.vcxitems*{b4886aed-b74a-42a0-814a-cfcfea195bcd}*SharedItemsImports = 9
 		Libraries\ESPAsyncWebServer-master\1.2.3\ESPAsyncWebServer-master\ESPAsyncWebServer-master-1.2.3.vcxitems*{bff74572-26c1-46fe-8150-2db28425ffb4}*SharedItemsImports = 9
 		Libraries\ESP32Encoder\0.9.1\ESP32Encoder\ESP32Encoder-0.9.1.vcxitems*{c03d2aeb-d2cf-416a-a43d-b8b74c168d1e}*SharedItemsImports = 9
 		flib\flib.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		Libraries\ArduinoOTA\2.0.0\ArduinoOTA\ArduinoOTA-2.0.0.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
 		Libraries\ESP32Encoder\0.9.1\ESP32Encoder\ESP32Encoder-0.9.1.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
 		Libraries\ESPAsyncWebServer-master\1.2.3\ESPAsyncWebServer-master\ESPAsyncWebServer-master-1.2.3.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
 		Libraries\MPU9250_WE\1.2.1\MPU9250_WE\MPU9250_WE-1.2.1.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4

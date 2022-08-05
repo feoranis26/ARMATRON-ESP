@@ -5,10 +5,13 @@
 #include <ESP32Encoder.h>
 #include <MPU9250_WE.h>
 #include <Wire.h>
+#include <PID_v1.h>
 #include <QuickPID.h>
+#include <ArduinoOTA.h>
 
 #include "flib.h"
 #include "fComms.h"
+
 #define MPU9250_ADDR 0x68
 
 MPU9250_WE myMPU9250 = MPU9250_WE(MPU9250_ADDR);
@@ -29,9 +32,12 @@ double heading;
 double gyroHeading;
 long lastMS;
 
-bool holdHeading = false;
-double holdHeadingP = 0.1;
-double headingTarget = 0;
+bool gotoX, gotoZ, gotoTh;
+double gotoheadingP = 0.1;
+double gotoXZP = 10;
+double motionSpeed = 0.2;
+double motionPrecision = 0.003;
+double xTarget, zTarget, headingTarget;
 
 bool absolute_commands = false;
 
@@ -160,12 +166,12 @@ void setup() {
         });
 
     fComms::AddCommand("hold_heading", [](String param) {
-        holdHeading = true;
+        gotoTh = true;
         headingTarget = gyroHeading;
         });
 
     fComms::AddCommand("no_hold_heading", [](String param) {
-        holdHeading = false;
+        gotoTh = false;
         });
 
     fComms::AddCommand("absolute_mode", [](String param) {
@@ -210,6 +216,11 @@ void setup() {
 
         });
 
+    fComms::AddCommand("reset_odom", [](String data) {
+        xpos = 0;
+        zpos = 0;
+        });
+
     fComms::AddCommand("set_speed_all", [](String data) {
         String read;
         int i;
@@ -245,6 +256,43 @@ void setup() {
 
             read += data[i];
         }
+        });
+
+    fComms::AddCommand("goto_pos", [](String data) {
+        String read;
+        int i;
+
+        read = "";
+        for (i = 0; i < data.length(); i++) {
+            if (data[i] == ' ') {
+                xTarget = atof(read.c_str());
+                break;
+            }
+
+            read += data[i];
+        }
+
+        i++;
+        read = "";
+        for (; i < data.length(); i++) {
+            if (data[i] == ' ') {
+                zTarget = atof(read.c_str());
+                break;
+            }
+
+            read += data[i];
+        }
+
+        fComms::TCPSend("set x target: " + String(xTarget));
+        fComms::TCPSend("set z target: " + String(zTarget));
+
+        gotoX = true;
+        gotoZ = true;
+        });
+
+    fComms::AddCommand("goto_rot", [](String data) {
+        gotoTh = true;
+        headingTarget = atof(data.c_str());
         });
 
     fComms::AddCommand("set_pid", [](String data) {
@@ -295,6 +343,10 @@ void setup() {
 
         });
 
+    fComms::AddCommand("set_motion_speed", [](String data) {
+        motionSpeed = atof(data.c_str());
+        });
+
     //fWiFiManager::Start();
 
     wheel1.Begin();
@@ -326,6 +378,8 @@ void setup() {
     calibGyro();
 
     xTaskCreate(OdomDriveTask, "DRIVE", 20000, NULL, 2, NULL);
+    ArduinoOTA.setHostname("WHEELDRV");
+    ArduinoOTA.begin();
 }
 
 void calibGyro() {
@@ -369,11 +423,34 @@ void updateSpeeds() {
     double xs = xspeed;
     double zs = zspeed;
 
-    if (absolute_commands) {
+    if (gotoTh && abs(headingTarget - gyroHeading) > 1)
+        thspeed = min(max((headingTarget - gyroHeading) * gotoheadingP, -0.5), 0.5);
+    else if (gotoTh)
+        thspeed = 0;
+
+    if (gotoX)
+    {
+        xs = (xTarget - xpos) * gotoXZP;
+        xs = max(-motionSpeed, min(motionSpeed, xs));
+
+        if (abs(xTarget - xpos) < 0.01 && (!gotoZ || abs(zTarget - zpos) < 0.01))
+            gotoX = false;
+    }
+
+    if (gotoZ)
+    {
+        zs = (zTarget - zpos) * gotoXZP;
+        zs = max(-motionSpeed, min(motionSpeed, zs));
+
+        if (abs(zTarget - zpos) < motionPrecision && (!gotoX || abs(xTarget - xpos) < motionPrecision))
+            gotoZ = false;
+    }
+
+    if (absolute_commands || gotoX || gotoZ) {
         double heading_radians = gyroHeading * PI / 180;
 
-        xs = cos(heading_radians) * xspeed + sin(heading_radians) * zspeed;
-        zs = cos(heading_radians) * zspeed + sin(-heading_radians) * xspeed;
+        xs = cos(heading_radians) * xs + sin(heading_radians) * zs;
+        zs = cos(heading_radians) * zs + sin(-heading_radians) * xs;
     }
 
     wheel1.TargetRPS = (xs + zs) * meters2rot - thspeed;
@@ -428,11 +505,6 @@ void Odometry() {
 
 void OdomDriveTask(void* param) {
     while (true) {
-        if (holdHeading && abs(headingTarget - gyroHeading) > 5)
-            thspeed = (headingTarget - gyroHeading) * holdHeadingP;
-        else if (holdHeading)
-            thspeed = 0;
-
         wheel1.Drive();
         wheel2.Drive();
         wheel3.Drive();
@@ -451,6 +523,8 @@ long lastLoopMs;
 double rate;
 
 void loop() {
+    ArduinoOTA.handle();
+
     double secs = (double)millis() / 1000;
 
     if (fmod(secs, 2) < 1)
@@ -477,7 +551,7 @@ void loop() {
 
     fComms::TCPSend("heading: " + String(gyroHeading));
     fComms::TCPSend("absolute_positioning: " + String(absolute_commands));
-    fComms::TCPSend("hold_heading: " + String(holdHeading));
+    fComms::TCPSend("hold_heading: " + String(gotoTh));
     fComms::TCPSend("position: " + String(xpos) + ", " + String(zpos));
 
     delay(50);
