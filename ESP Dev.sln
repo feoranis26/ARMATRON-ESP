@@ -61,6 +61,7 @@ Global
 		Libraries\Encoder\1.4.2\Encoder\Encoder-1.4.2.vcxitems*{451e9ee5-b163-4768-8e2f-adc54cf0638f}*SharedItemsImports = 9
 		flib\flib.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
 		Libraries\Adafruit_GFX_Library\1.10.14\Adafruit_GFX_Library\Adafruit_GFX_Library-1.10.14.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
+		Libraries\ArduinoOTA\2.0.0\ArduinoOTA\ArduinoOTA-2.0.0.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
 		Libraries\AsyncUDP\2.0.0\AsyncUDP\AsyncUDP-2.0.0.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
 		Libraries\esp32-sh1106-oled-master\1.0.0\esp32-sh1106-oled-master\esp32-sh1106-oled-master-1.0.0.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4
 		Libraries\ESPAsyncWebServer-master\1.2.3\ESPAsyncWebServer-master\ESPAsyncWebServer-master-1.2.3.vcxitems*{476e6355-60e8-4da9-8726-9f1ca4bf5899}*SharedItemsImports = 4

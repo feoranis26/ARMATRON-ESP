@@ -7,6 +7,7 @@
 #include "fComms.h"
 
 #include <ESPAsyncWebServer.h>
+#include <ArduinoOTA.h>
 
 //AsyncWebServer srv(80);
 
@@ -63,6 +64,9 @@ void setup() {
     flib_Startup();
 
     fComms::StartAsTask("POWERMGR");
+
+    ArduinoOTA.setHostname("POWERMGR");
+    ArduinoOTA.begin();
     //srv.begin();
 }
 
@@ -227,9 +231,12 @@ void Shutdown() {
 
 // the loop function runs over and over again until power down or reset
 void loop() {
+    ArduinoOTA.handle();
+
     double voltage5v  = (analogReadMilliVolts(32) * 11.0 / 1000.0) - 0.3;
     double voltage12v = (analogReadMilliVolts(35) * 11.0 / 1000.0) - 0.3;
     double voltage24v = (analogReadMilliVolts(34) * 11.0 / 1000.0) - 0.3;
+    double voltage5vRegIn = (analogReadMilliVolts(33) * 11.0 / 1000.0) - 0.3;
 
     double secs = (double)millis() / 1000;  
 
@@ -302,9 +309,13 @@ void loop() {
 
     fGUI::SetFont(u8g2_font_8x13_tr);
 
-    fGUI::PrintCentered("5V  : " + String(voltage5v) + "v ON", 64, 17);
-    fGUI::PrintCentered("12V : " + String(isPowerOn ? (String(voltage12v) + "v ON") : "OFF"), 64, 32);
-    fGUI::PrintCentered("24V : " + String(false ? (String(voltage24v) + "v ON") : "OFF"), 64, 47);
+    fGUI::Print("5V : " + String(voltage5v) + "v", 0, 17);
+    fGUI::Print("12V: " + String(isPowerOn ? (String(voltage12v) + "v") : "OFF"), 0, 32);
+    fGUI::Print("24V: " + String(false ? (String(voltage24v) + "v") : "OFF"), 0, 47);
+
+    fGUI::Print("5v SPLY", 72, 24);
+    fGUI::Print(String(voltage5vRegIn) + "v", 88, 37);
+
 
     fGUI::SetFont(u8g2_font_3x5im_tr);
 

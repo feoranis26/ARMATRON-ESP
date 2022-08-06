@@ -28,8 +28,11 @@ double thspeed;
 
 double xpos;
 double zpos;
+double precise_x, precise_z;
+double x_velocity, z_velocity;
 double heading;
 double gyroHeading;
+double gyroSpeed;
 long lastMS;
 
 bool gotoX, gotoZ, gotoTh;
@@ -290,6 +293,32 @@ void setup() {
         gotoZ = true;
         });
 
+    fComms::AddCommand("set_precise_pos", [](String data) {
+        String read;
+        int i;
+
+        read = "";
+        for (i = 0; i < data.length(); i++) {
+            if (data[i] == ' ') {
+                precise_x = atof(read.c_str());
+                break;
+            }
+
+            read += data[i];
+        }
+
+        i++;
+        read = "";
+        for (; i < data.length(); i++) {
+            if (data[i] == ' ') {
+                precise_z = atof(read.c_str());
+                break;
+            }
+
+            read += data[i];
+        }
+        });
+
     fComms::AddCommand("goto_rot", [](String data) {
         gotoTh = true;
         headingTarget = atof(data.c_str());
@@ -446,17 +475,20 @@ void updateSpeeds() {
             gotoZ = false;
     }
 
+    double x_out = xs;
+    double z_out = zs;
+
     if (absolute_commands || gotoX || gotoZ) {
         double heading_radians = gyroHeading * PI / 180;
 
-        xs = cos(heading_radians) * xs + sin(heading_radians) * zs;
-        zs = cos(heading_radians) * zs + sin(-heading_radians) * xs;
+        x_out = cos(heading_radians) * xs + sin(heading_radians) * zs;
+        z_out = cos(heading_radians) * zs + sin(-heading_radians) * xs;
     }
 
-    wheel1.TargetRPS = (xs + zs) * meters2rot - thspeed;
-    wheel2.TargetRPS = (-xs + zs) * meters2rot + thspeed;
-    wheel3.TargetRPS = (xs + zs) * meters2rot + thspeed;
-    wheel4.TargetRPS = (-xs + zs) * meters2rot - thspeed;
+    wheel1.TargetRPS = (x_out + z_out) * meters2rot - thspeed;
+    wheel2.TargetRPS = (-x_out + z_out) * meters2rot + thspeed;
+    wheel3.TargetRPS = (x_out + z_out) * meters2rot + thspeed;
+    wheel4.TargetRPS = (-x_out + z_out) * meters2rot - thspeed;
 }
 
 void getSpeeds() {
@@ -492,7 +524,7 @@ void Odometry() {
     heading = atan2f(-magY, magX);
 
 
-    double gyroSpeed = myMPU9250.getGyrValues().z;
+    gyroSpeed = myMPU9250.getGyrValues().z;
     double gyroDelta = gyroSpeed * dT;
 
     gyroHeading += abs(gyroSpeed) > gyroDeadzone ? gyroDelta : 0;
@@ -501,6 +533,9 @@ void Odometry() {
 
     zpos += ((sin(heading_radians) * dX) + (cos(heading_radians) * dZ)) * dT * rot2meters;
     xpos += (-(sin(heading_radians) * dZ) + (cos(heading_radians) * dX)) * dT * rot2meters;
+
+    x_velocity = (((sin(heading_radians) * dX) + (cos(heading_radians) * dZ)) / dT) * rot2meters;
+    z_velocity = ((-(sin(heading_radians) * dZ) + (cos(heading_radians) * dX)) / dT) * rot2meters;
 }
 
 void OdomDriveTask(void* param) {
@@ -551,8 +586,10 @@ void loop() {
 
     fComms::TCPSend("heading: " + String(gyroHeading));
     fComms::TCPSend("absolute_positioning: " + String(absolute_commands));
+    fComms::TCPSend("moving: " + String(gotoX || gotoZ));
     fComms::TCPSend("hold_heading: " + String(gotoTh));
     fComms::TCPSend("position: " + String(xpos) + ", " + String(zpos));
+    fComms::TCPSend("velocity: " + String(x_velocity) + ", " + String(z_velocity) + ", " + String(gyroSpeed));
 
     delay(50);
 }
