@@ -3,6 +3,7 @@
 #define fGUI_h
 
 //#include "fDebugUtils.h"
+#include <Adafruit_GFX.h>
 #include <U8x8lib.h>
 #include <U8g2lib.h>
 #include <MUIU8g2.h>
