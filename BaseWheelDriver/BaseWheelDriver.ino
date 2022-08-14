@@ -293,6 +293,11 @@ void setup() {
         gotoZ = true;
         });
 
+    fComms::AddCommand("stop_goto", [](String data) {
+        gotoX = false;
+        gotoZ = false;
+        });
+
     fComms::AddCommand("set_precise_pos", [](String data) {
         String read;
         int i;
@@ -387,11 +392,25 @@ void setup() {
     if (!myMPU9250.init()) {
         fDebugUtils::Log("Can't communicate with IMU!");
 
+        fGUI::SetFont(u8g2_font_10x20_tr);
+        fGUI::PrintCentered("IMU FAIL", 64, 16);
+        fGUI::ProgressBar(64, 36, 96, 16, 5.0 / 6.0, true);
+        fGUI::Flush();
+
+        fDebugUtils::alert_beep();
+
         while (true)
             fDebugUtils::error_tone();
     }
     if (!myMPU9250.initMagnetometer()) {
         fDebugUtils::Log("Can't init magnetometer!");
+
+        fGUI::SetFont(u8g2_font_10x20_tr);
+        fGUI::PrintCentered("IMU FAIL", 64, 16);
+        fGUI::ProgressBar(64, 36, 96, 16, 5.0 / 6.0, true);
+        fGUI::Flush();
+
+        fDebugUtils::alert_beep();
 
         while (true)
             fDebugUtils::error_tone();

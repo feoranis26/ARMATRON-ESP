@@ -8,12 +8,15 @@
 
 #include <ESPAsyncWebServer.h>
 #include <ArduinoOTA.h>
+#include <Adafruit_ADS1X15.h>
 
+Adafruit_ADS1115 adc;
 //AsyncWebServer srv(80);
 
 
 bool isPowerOn = false;
 bool isCharging = false;
+bool canCharge = false;
 
 void setup() {
     analogSetAttenuation(ADC_11db);
@@ -82,7 +85,27 @@ void setup() {
         Shutdown();
         });
 
+    fComms::AddCommand("shutdown_delay", [](String args) {
+        ShutdownDelayed();
+        });
+
     flib_Startup();
+
+    if (!adc.begin()) {
+        fDebugUtils::Log("Can't init ADC!");
+
+        fGUI::SetFont(u8g2_font_10x20_tr);
+        fGUI::PrintCentered("ADC FAIL", 64, 16);
+        fGUI::ProgressBar(64, 36, 96, 16, 5.0 / 6.0, true);
+        fGUI::Flush();
+
+        fDebugUtils::alert_beep();
+
+        while (true)
+            fDebugUtils::error_tone();
+    }
+
+    adc.setGain(GAIN_ONE);
 
     fComms::StartAsTask("POWERMGR");
 
@@ -112,27 +135,29 @@ void enablePower() {
 
     long startms = millis();
     float voltage12v = (analogReadMilliVolts(35) * 11.0 / 1000.0) - 0.3;
+    float voltage24v = (analogReadMilliVolts(34) * 11.0 / 1000.0) - 0.3;
 
     fDebugUtils::beep();
 
-    while (voltage12v < 9) {
+    while (voltage12v < 9 || voltage24v < 18) {
         voltage12v = (analogReadMilliVolts(35) * 11.0 / 1000.0) - 0.3;
+        voltage24v = (analogReadMilliVolts(34) * 11.0 / 1000.0) - 0.3;
 
         fGUI::SetFont(u8g2_font_6x10_tr, true);
         fGUI::PrintCentered("Checking voltage", 64, 16, true);
         fGUI::ProgressBar(64, 36, 96, 16, 5.0 / 6.0, true, true);
         fGUI::Flush(true);
-        
+
 
         if (millis() - startms > 1000) {
             digitalWrite(25, LOW);
 
-            fDebugUtils::alert_beep();
-
             fGUI::SetFont(u8g2_font_8x13B_tr, true);
-            fGUI::PrintCentered("NO 12V SUPPLY!", 64, 16, true);
+            fGUI::PrintCentered(voltage12v < 9 ? (voltage24v > 18 ? "NO 12V SUPPLY!" : "NO POWER!") : "NO 24V SUPPLY!", 64, 16, true);
             fGUI::ProgressBar(64, 36, 96, 16, 5.0 / 6.0, true, true);
             fGUI::Flush(true);
+
+            fDebugUtils::alert_beep();
 
             while (millis() - startms < 10000 && !digitalRead(18)) {
                 fDebugUtils::error_tone();
@@ -180,17 +205,53 @@ void startCharging() {
 
         delay(200);
     }
+
+    float voltage12v = adc.readADC_SingleEnded(0) * 11;
+    float voltage24v = adc.readADC_SingleEnded(1) * 11;
+    if (voltage12v < 8)
+    {
+        digitalWrite(26, LOW);
+
+        fDebugUtils::alert_beep();
+
+        fGUI::SetFont(u8g2_font_10x20_tr, true);
+        fGUI::PrintCentered("12V N/C!", 64, 16, true);
+        fGUI::ProgressBar(64, 36, 96, 16, 5.0 / 6.0, true, true);
+        fGUI::Flush(true);
+
+        delay(2500);
+
+        fGUI::EndMenu();
+        return;
+    }
+
+    if (voltage24v < 16)
+    {
+        digitalWrite(26, LOW);
+
+        fDebugUtils::alert_beep();
+
+        fGUI::SetFont(u8g2_font_10x20_tr, true);
+        fGUI::PrintCentered("24V N/C!", 64, 16, true);
+        fGUI::ProgressBar(64, 36, 96, 16, 5.0 / 6.0, true, true);
+        fGUI::Flush(true);
+
+        delay(2500);
+
+        fGUI::EndMenu();
+        return;
+    }
+
     digitalWrite(26, HIGH);
 
     long startms = millis();
-    float current12v = ((analogReadMilliVolts(39) * 11.0 / 1000.0) - 2.8) * (1 / 0.166);
-    float current24v = ((analogReadMilliVolts(36) * 11.0 / 1000.0) - 2.8) * (1 / 0.166);
-
+    float current12v = (adc.computeVolts(adc.readADC_SingleEnded(2)) * 11 - 2.5) * (1 / 0.185);
+    float current24v = (adc.computeVolts(adc.readADC_SingleEnded(3)) * 11 - 2.5) * (1 / 0.185);
     fDebugUtils::beep();
 
     while (current12v < 0.1 || current24v < 0.1) {
-        current12v = ((analogReadMilliVolts(39) * 11.0 / 1000.0) - 0.3) * (1 / 0.166);
-        current24v = ((analogReadMilliVolts(36) * 11.0 / 1000.0) - 0.3) * (1 / 0.166);
+        current12v = (adc.readADC_SingleEnded(2) * 0.000125 - 2.5) * (1 / 0.185);
+        current24v = (adc.readADC_SingleEnded(3) * 0.000125 - 2.5) * (1 / 0.185);
 
         fGUI::SetFont(u8g2_font_6x10_tr, true);
         fGUI::PrintCentered("Checking current", 64, 16, true);
@@ -203,10 +264,14 @@ void startCharging() {
 
             fDebugUtils::alert_beep();
 
-            fGUI::SetFont(u8g2_font_8x13B_tr, true);
-            fGUI::PrintCentered("NOT CONNECTED!", 64, 16, true);
+            fGUI::SetFont(u8g2_font_10x20_tr, true);
+            fGUI::PrintCentered("CNCT ERR!", 64, 16, true);
             fGUI::ProgressBar(64, 36, 96, 16, 5.0 / 6.0, true, true);
             fGUI::Flush(true);
+
+            delay(2500);
+
+            fGUI::EndMenu();
             return;
         }
     }
@@ -234,7 +299,7 @@ void disablePower() {
     for (int i = 0; i < 5; i++) {
         fGUI::SetFont(u8g2_font_10x20_tr, true);
 
-        fGUI::PrintCentered("Power off!", 64, 16 , true);
+        fGUI::PrintCentered("Power off!", 64, 16, true);
         fGUI::ProgressBar(64, 36, 96, 16, (double)(5 - i) / 5, false, true);
 
         fGUI::Flush(true);
@@ -281,6 +346,14 @@ void disableVoltageChk() {
 }
 
 void shutdownBtn() {
+    fGUI::EndMenu();
+
+    for (int i = 0; i < 20; i++) {
+        if (!digitalRead(18))
+            return;
+        delay(100);
+    }
+
     fGUI::StartMenu();
 
     for (int i = 0; i < 5; i++) {
@@ -336,16 +409,22 @@ void Shutdown() {
 
 void ShutdownDelayed() {
     fGUI::StartMenu();
+    fDebugUtils::alert_background();
     for (int i = 0; i < 40; i++) {
         fGUI::SetFont(u8g2_font_10x20_tr, true);
 
         fGUI::PrintCentered("Shutting down!", 64, 16, true);
-        fGUI::ProgressBar(64, 36, 96, 16, (double)(i) / 50, true, true);
+        fGUI::ProgressBar(64, 36, 96, 16, (double)(i) / 40, true, true);
 
         fGUI::SetFont(u8g2_font_5x7_tr, true);
         fGUI::Flush(true);
+        delay(250);
 
-        fDebugUtils::beep();
+        if (i % 4 == 0)
+            fDebugUtils::beep_background();
+
+        if (digitalRead(18))
+            return;
     }
 
     fDebugUtils::shutdown_beep();
@@ -363,20 +442,23 @@ void ShutdownDelayed() {
 void loop() {
     ArduinoOTA.handle();
 
-    double voltage5v  = (analogReadMilliVolts(32) * 11.0 / 1000.0) - 0.3;
+    double voltage5v = (analogReadMilliVolts(32) * 11.0 / 1000.0) - 0.3;
     double voltage12v = (analogReadMilliVolts(35) * 11.0 / 1000.0) - 0.3;
     double voltage24v = (analogReadMilliVolts(34) * 11.0 / 1000.0) - 0.3;
     double voltage5vRegIn = (analogReadMilliVolts(33) * 11.0 / 1000.0) - 0.3;
 
-    float chargeCurrent12v = ((analogReadMilliVolts(39) * 11.0 / 1000.0) - 2.8) * (1 / 0.166);
-    float chargeCurrent24v = ((analogReadMilliVolts(36) * 11.0 / 1000.0) - 2.8) * (1 / 0.166);
+    float chargeCurrent12v = (adc.computeVolts(adc.readADC_SingleEnded(2)) * 11 - 2.5) * (1 / 0.185);
+    float chargeCurrent24v = (adc.computeVolts(adc.readADC_SingleEnded(3)) * 11 - 2.5) * (1 / 0.185);
 
-    double secs = (double)millis() / 1000;  
+    float chargeVoltage12v = adc.computeVolts(adc.readADC_SingleEnded(0)) * 11;
+    float chargeVoltage24v = adc.computeVolts(adc.readADC_SingleEnded(1)) * 11;
+
+    double secs = (double)millis() / 1000;
 
     if (digitalRead(18))
         fGUI::ResetBurnInProtectionTimeout();
 
-    if(fmod(secs, 2) < 1)
+    if (fmod(secs, 2) < 1)
         fGUI::ProgressBar(124, 62, 8, 4, fmod(secs, 2), true);
     else
         fGUI::ProgressBar(124, 62, 8, 4, 2 - fmod(secs, 2), false);
@@ -410,7 +492,7 @@ void loop() {
             isPowerOn = false;
             return;
         }
-        
+
         if (false && voltage24v < 18) {
             digitalWrite(25, LOW);
 
@@ -442,25 +524,76 @@ void loop() {
         if (isCharging && chargeCurrent12v < 0.1 && chargeCurrent24v < 0.1) {
             stopCharging();
         }
+
+
+        if (isCharging && (chargeVoltage12v < 9 || chargeVoltage24v < 18)) {
+            digitalWrite(26, LOW);
+
+            fDebugUtils::alert_beep();
+
+            fGUI::SetFont(u8g2_font_10x20_tr);
+            fGUI::PrintCentered("CHG DSCNCT!", 64, 37);
+            fGUI::Flush();
+            fDebugUtils::error_tone();
+
+            long startms = millis();
+
+            while (millis() - startms < 10000 && !digitalRead(18)) {
+                fDebugUtils::error_tone();
+            }
+
+            while (!digitalRead(18)) {
+                fDebugUtils::alert_beep();
+                for (int i = 0; i < 38; i++) {
+                    delay(250);
+                    if (digitalRead(18))
+                        break;
+                }
+            }
+
+            return;
+        }
+    }
+
+    if (!canCharge && chargeVoltage12v > 9 && chargeVoltage24v > 18) {
+        fDebugUtils::success_background();
+        canCharge = true;
+    }
+    else if (!(chargeVoltage12v > 9 && chargeVoltage24v > 18)) {
+        if (canCharge && !isCharging)
+            fDebugUtils::shutdown_background();
+
+        canCharge = false;
     }
 
     fGUI::SetFont(u8g2_font_8x13_tr);
 
     fGUI::Print("5V : " + String(voltage5v) + "v", 0, 17);
     fGUI::Print("12V: " + String(isPowerOn ? (String(voltage12v) + "v") : (isCharging ? ("CHG " + String(chargeCurrent12v) + "A") : "OFF")), 0, 32);
-    fGUI::Print("24V: " + String(false ? (String(voltage24v) + "v") : (isCharging ? ("CHG " + String(chargeCurrent12v) + "A") : "OFF")), 0, 47);
+    fGUI::Print("24V: " + String(isPowerOn ? (String(voltage24v) + "v") : (isCharging ? ("CHG " + String(chargeCurrent12v) + "A") : "OFF")), 0, 47);
 
-    fGUI::Print("5v SPLY", 72, 24);
-    fGUI::Print(String(voltage5vRegIn) + "v", 88, 37);
+    fGUI::Print("5v SPLY", 72, 32);
+    fGUI::Print(String(voltage5vRegIn) + "v", 88, 45);
 
 
     fGUI::SetFont(u8g2_font_3x5im_tr);
 
-    if(fWiFiManager::GetStatus() != "Not started")
+    if (fWiFiManager::GetStatus() != "Not started")
         fGUI::Print(fWiFiManager::GetStatus(), 2, 64);
 
     fGUI::Print(fComms::GetStatus(), 2, 56);
 
     fGUI::Flush();
+
+    fComms::TCPSend("5v: " + String(voltage5v));
+    fComms::TCPSend("12v: " + String(voltage12v));
+    fComms::TCPSend("24v: " + String(voltage24v));
+
+    fComms::TCPSend("in_12v: " + String(chargeVoltage12v));
+    fComms::TCPSend("in_24v: " + String(chargeVoltage24v));
+
+    fComms::TCPSend("in_12v_c: " + String(chargeCurrent12v));
+    fComms::TCPSend("in_24v_c: " + String(chargeCurrent24v));
+
     delay(50);
 }
