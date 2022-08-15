@@ -57,11 +57,6 @@ void setup() {
         });
 
     fComms::AddCommand("start_chg", [](String args) {
-        if (isPowerOn) {
-            disablePower();
-            delay(500);
-        }
-
         startCharging();
         });
 
@@ -135,13 +130,13 @@ void enablePower() {
 
     long startms = millis();
     float voltage12v = (analogReadMilliVolts(35) * 11.0 / 1000.0) - 0.3;
-    float voltage24v = (analogReadMilliVolts(34) * 11.0 / 1000.0) - 0.3;
+    float voltage24v = 24;// (analogReadMilliVolts(34) * 11.0 / 1000.0) - 0.3;
 
     fDebugUtils::beep();
 
     while (voltage12v < 9 || voltage24v < 18) {
         voltage12v = (analogReadMilliVolts(35) * 11.0 / 1000.0) - 0.3;
-        voltage24v = (analogReadMilliVolts(34) * 11.0 / 1000.0) - 0.3;
+        voltage24v = 24;// (analogReadMilliVolts(34) * 11.0 / 1000.0) - 0.3;
 
         fGUI::SetFont(u8g2_font_6x10_tr, true);
         fGUI::PrintCentered("Checking voltage", 64, 16, true);
@@ -189,12 +184,22 @@ void enablePower() {
 }
 
 void startCharging() {
-    if (isPowerOn || isCharging)
+    if (isCharging)
         return;
 
-    fDebugUtils::beep();
+    if (!canCharge) {
+        fDebugUtils::shutdown_background();
+        return;
+    }
+
+    if (isPowerOn) {
+        disablePower();
+        delay(500);
+    }
+
+    fDebugUtils::alert_beep2();
+
     fGUI::StartMenu();
-    fDebugUtils::success_background();
     for (int i = 0; i < 5; i++) {
         fGUI::SetFont(u8g2_font_8x13_tr, true);
 
@@ -206,19 +211,25 @@ void startCharging() {
         delay(200);
     }
 
+    fGUI::SetFont(u8g2_font_6x10_tr, true);
+    fGUI::PrintCentered("Checking voltage", 64, 16, true);
+    fGUI::ProgressBar(64, 36, 96, 16, 1, true, true);
+    fGUI::Flush(true);
+
+    delay(500);
+
     float voltage12v = adc.readADC_SingleEnded(0) * 11;
     float voltage24v = adc.readADC_SingleEnded(1) * 11;
     if (voltage12v < 8)
     {
         digitalWrite(26, LOW);
 
-        fDebugUtils::alert_beep();
-
         fGUI::SetFont(u8g2_font_10x20_tr, true);
         fGUI::PrintCentered("12V N/C!", 64, 16, true);
         fGUI::ProgressBar(64, 36, 96, 16, 5.0 / 6.0, true, true);
         fGUI::Flush(true);
 
+        fDebugUtils::error_beep();
         delay(2500);
 
         fGUI::EndMenu();
@@ -229,13 +240,12 @@ void startCharging() {
     {
         digitalWrite(26, LOW);
 
-        fDebugUtils::alert_beep();
-
         fGUI::SetFont(u8g2_font_10x20_tr, true);
         fGUI::PrintCentered("24V N/C!", 64, 16, true);
         fGUI::ProgressBar(64, 36, 96, 16, 5.0 / 6.0, true, true);
         fGUI::Flush(true);
 
+        fDebugUtils::error_beep();
         delay(2500);
 
         fGUI::EndMenu();
@@ -262,13 +272,12 @@ void startCharging() {
         if (millis() - startms > 250) {
             digitalWrite(26, LOW);
 
-            fDebugUtils::alert_beep();
-
             fGUI::SetFont(u8g2_font_10x20_tr, true);
             fGUI::PrintCentered("CNCT ERR!", 64, 16, true);
             fGUI::ProgressBar(64, 36, 96, 16, 5.0 / 6.0, true, true);
             fGUI::Flush(true);
 
+            fDebugUtils::error_beep();
             delay(2500);
 
             fGUI::EndMenu();
@@ -286,6 +295,7 @@ void startCharging() {
 
     isCharging = true;
     fGUI::EndMenu();
+    fDebugUtils::success_background();
 }
 
 void disablePower() {
@@ -559,6 +569,7 @@ void loop() {
         fDebugUtils::success_background();
         canCharge = true;
     }
+
     else if (!(chargeVoltage12v > 9 && chargeVoltage24v > 18)) {
         if (canCharge && !isCharging)
             fDebugUtils::shutdown_background();

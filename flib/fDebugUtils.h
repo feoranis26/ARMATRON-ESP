@@ -56,6 +56,51 @@ public:
         ledcWriteTone(1, 1000);
         delay(125);
         ledcWrite(1, 0);
+        ledcDetachPin(BUZZER_PIN);
+#endif
+    }
+
+    static void alert_beep2() {
+#ifdef BUZZER_PIN
+        ledcAttachPin(BUZZER_PIN, 1);
+
+        ledcWriteTone(1, 500);
+        delay(125);
+        ledcWriteTone(1, 1000);
+        delay(125);
+        ledcWrite(1, 0);
+        delay(250);
+        ledcWriteTone(1, 1000);
+        delay(125);
+        ledcWrite(1, 0);
+
+        delay(500);
+
+        ledcWriteTone(1, 500);
+        delay(125);
+        ledcWriteTone(1, 1000);
+        delay(125);
+        ledcWrite(1, 0);
+        delay(250);
+        ledcWriteTone(1, 1000);
+        delay(125);
+        ledcWrite(1, 0);
+
+        ledcWrite(1, 0);
+        ledcDetachPin(BUZZER_PIN);
+#endif
+    }
+
+    static void start_beep(int freq) {
+#ifdef BUZZER_PIN
+        ledcAttachPin(BUZZER_PIN, 1);
+        ledcWriteTone(1, 4000);
+#endif
+    }
+
+    static void stop_beep() {
+#ifdef BUZZER_PIN
+        ledcWrite(1, 0);
         delay(375);
         ledcDetachPin(BUZZER_PIN);
 #endif
@@ -111,6 +156,23 @@ public:
         delay(500);
         ledcWriteTone(1, 1600);
         delay(500);
+        ledcDetachPin(BUZZER_PIN);
+#endif
+    }
+
+    static void error_beep() {
+#ifdef BUZZER_PIN
+        ledcAttachPin(BUZZER_PIN, 1);
+        ledcWriteTone(1, 800);
+        delay(250);
+        ledcWriteTone(1, 1600);
+        delay(125);
+        ledcWrite(1, 0);
+        delay(375);
+        ledcWriteTone(1, 800);
+        delay(250);
+        ledcWriteTone(1, 1600);
+        delay(125);
         ledcDetachPin(BUZZER_PIN);
 #endif
     }
