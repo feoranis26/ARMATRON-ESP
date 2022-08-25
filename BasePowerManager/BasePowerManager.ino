@@ -23,6 +23,7 @@ void setup() {
     adcAttachPin(32);
     adcAttachPin(35);
     adcAttachPin(34);
+    adcAttachPin(39);
 
     pinMode(18, INPUT);
     digitalWrite(18, HIGH);
@@ -100,7 +101,7 @@ void setup() {
             fDebugUtils::error_tone();
     }
 
-    adc.setGain(GAIN_ONE);
+    adc.setGain(GAIN_TWOTHIRDS);
 
     fComms::StartAsTask("POWERMGR");
 
@@ -255,10 +256,11 @@ void startCharging() {
     digitalWrite(26, HIGH);
 
     long startms = millis();
-    float current12v = (adc.computeVolts(adc.readADC_SingleEnded(2)) * 11 - 2.5) * (1 / 0.185);
-    float current24v = (adc.computeVolts(adc.readADC_SingleEnded(3)) * 11 - 2.5) * (1 / 0.185);
+    float current12v = (adc.computeVolts(adc.readADC_SingleEnded(2)) - 2.5) * (1 / 0.185);
+    float current24v = (adc.computeVolts(adc.readADC_SingleEnded(3)) - 2.5) * (1 / 0.185);
     fDebugUtils::beep();
 
+    /*
     while (current12v < 0.1 || current24v < 0.1) {
         current12v = (adc.readADC_SingleEnded(2) * 0.000125 - 2.5) * (1 / 0.185);
         current24v = (adc.readADC_SingleEnded(3) * 0.000125 - 2.5) * (1 / 0.185);
@@ -291,6 +293,8 @@ void startCharging() {
     fGUI::Flush(true);
 
     delay(500);
+
+    */
 
 
     isCharging = true;
@@ -457,11 +461,11 @@ void loop() {
     double voltage24v = (analogReadMilliVolts(34) * 11.0 / 1000.0) - 0.3;
     double voltage5vRegIn = (analogReadMilliVolts(33) * 11.0 / 1000.0) - 0.3;
 
-    float chargeCurrent12v = (adc.computeVolts(adc.readADC_SingleEnded(2)) * 11 - 2.5) * (1 / 0.185);
-    float chargeCurrent24v = (adc.computeVolts(adc.readADC_SingleEnded(3)) * 11 - 2.5) * (1 / 0.185);
+    float chargeCurrent12v = (adc.computeVolts(adc.readADC_SingleEnded(2)) - 2.43) / 0.37;
+    float chargeCurrent24v = (adc.computeVolts(adc.readADC_SingleEnded(1)) - 2.43) / 0.37;
 
-    float chargeVoltage12v = adc.computeVolts(adc.readADC_SingleEnded(0)) * 11;
-    float chargeVoltage24v = adc.computeVolts(adc.readADC_SingleEnded(1)) * 11;
+    float chargeVoltage12v = adc.computeVolts(adc.readADC_SingleEnded(0)) * 11.015;
+    float chargeVoltage24v = (analogReadMilliVolts(39) * 10.527 / 1000.0);
 
     double secs = (double)millis() / 1000;
 
@@ -531,9 +535,38 @@ void loop() {
             return;
         }
 
+        if (voltage5vRegIn < 9) {
+            fDebugUtils::alert_beep();
+
+            fGUI::SetFont(u8g2_font_10x20_tr);
+            fGUI::PrintCentered("5V SP LOW!", 64, 37);
+            fGUI::Flush();
+            fDebugUtils::error_tone();
+
+            long startms = millis();
+
+            while (millis() - startms < 10000 && !digitalRead(18)) {
+                fDebugUtils::error_tone();
+            }
+
+            while (!digitalRead(18)) {
+                fDebugUtils::alert_beep();
+                for (int i = 0; i < 38; i++) {
+                    delay(250);
+                    if (digitalRead(18))
+                        break;
+                }
+
+                if (voltage5vRegIn < 8)
+                    Shutdown();
+            }
+        }
+
+        /*
         if (isCharging && chargeCurrent12v < 0.1 && chargeCurrent24v < 0.1) {
             stopCharging();
         }
+        */
 
 
         if (isCharging && (chargeVoltage12v < 9 || chargeVoltage24v < 18)) {
@@ -580,12 +613,13 @@ void loop() {
     fGUI::SetFont(u8g2_font_8x13_tr);
 
     fGUI::Print("5V : " + String(voltage5v) + "v", 0, 17);
-    fGUI::Print("12V: " + String(isPowerOn ? (String(voltage12v) + "v") : (isCharging ? ("CHG " + String(chargeCurrent12v) + "A") : "OFF")), 0, 32);
-    fGUI::Print("24V: " + String(isPowerOn ? (String(voltage24v) + "v") : (isCharging ? ("CHG " + String(chargeCurrent12v) + "A") : "OFF")), 0, 47);
+    fGUI::Print("12V: " + String(isPowerOn ? (String(voltage12v) + "v") : (isCharging ? ("CHG " + String(floor(chargeCurrent12v * 10) / 10) + "A") : "OFF")), 0, 32);
+    fGUI::Print("24V: " + String(isPowerOn ? (String(voltage24v) + "v") : (isCharging ? ("CHG " + String(floor(chargeCurrent24v * 10) / 10) + "A") : "OFF")), 0, 47);
 
-    fGUI::Print("5v SPLY", 72, 32);
-    fGUI::Print(String(voltage5vRegIn) + "v", 88, 45);
-
+    if (!isCharging) {
+        fGUI::Print("5v SPLY", 72, 32);
+        fGUI::Print(String(voltage5vRegIn) + "v", 88, 45);
+    }
 
     fGUI::SetFont(u8g2_font_3x5im_tr);
 
