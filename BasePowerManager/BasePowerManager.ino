@@ -256,14 +256,15 @@ void startCharging() {
     digitalWrite(26, HIGH);
 
     long startms = millis();
-    float current12v = (adc.computeVolts(adc.readADC_SingleEnded(2)) - 2.5) * (1 / 0.185);
-    float current24v = (adc.computeVolts(adc.readADC_SingleEnded(3)) - 2.5) * (1 / 0.185);
+    float current12v = ((adc.computeVolts(adc.readADC_SingleEnded(2)) - 2.5) / 0.183);
+    float current24v = (adc.computeVolts(adc.readADC_SingleEnded(1)) - 2.5) / 0.37;
+
     fDebugUtils::beep();
 
-    /*
+
     while (current12v < 0.1 || current24v < 0.1) {
-        current12v = (adc.readADC_SingleEnded(2) * 0.000125 - 2.5) * (1 / 0.185);
-        current24v = (adc.readADC_SingleEnded(3) * 0.000125 - 2.5) * (1 / 0.185);
+        current12v = ((adc.computeVolts(adc.readADC_SingleEnded(2)) - 2.5) / 0.183);
+        current24v = (adc.computeVolts(adc.readADC_SingleEnded(1)) - 2.5) / 0.37;
 
         fGUI::SetFont(u8g2_font_6x10_tr, true);
         fGUI::PrintCentered("Checking current", 64, 16, true);
@@ -271,7 +272,7 @@ void startCharging() {
         fGUI::Flush(true);
 
 
-        if (millis() - startms > 250) {
+        if (millis() - startms > 1000) {
             digitalWrite(26, LOW);
 
             fGUI::SetFont(u8g2_font_10x20_tr, true);
@@ -293,9 +294,6 @@ void startCharging() {
     fGUI::Flush(true);
 
     delay(500);
-
-    */
-
 
     isCharging = true;
     fGUI::EndMenu();
@@ -461,8 +459,8 @@ void loop() {
     double voltage24v = (analogReadMilliVolts(34) * 11.0 / 1000.0) - 0.3;
     double voltage5vRegIn = (analogReadMilliVolts(33) * 11.0 / 1000.0) - 0.3;
 
-    float chargeCurrent12v = (adc.computeVolts(adc.readADC_SingleEnded(2)) - 2.43) / 0.37;
-    float chargeCurrent24v = (adc.computeVolts(adc.readADC_SingleEnded(1)) - 2.43) / 0.37;
+    float chargeCurrent12v = ((adc.computeVolts(adc.readADC_SingleEnded(2)) - 2.5) / 0.183);
+    float chargeCurrent24v = (adc.computeVolts(adc.readADC_SingleEnded(1)) - 2.5) / 0.37;
 
     float chargeVoltage12v = adc.computeVolts(adc.readADC_SingleEnded(0)) * 11.015;
     float chargeVoltage24v = (analogReadMilliVolts(39) * 10.527 / 1000.0);
@@ -507,7 +505,7 @@ void loop() {
             return;
         }
 
-        if (false && voltage24v < 18) {
+        if (isPowerOn && voltage24v < 18) {
             digitalWrite(25, LOW);
 
             fDebugUtils::alert_beep();
@@ -535,7 +533,7 @@ void loop() {
             return;
         }
 
-        if (voltage5vRegIn < 9) {
+        if (voltage5vRegIn < 9 || (voltage5vRegIn > 15 && voltage5vRegIn < 19)) {
             fDebugUtils::alert_beep();
 
             fGUI::SetFont(u8g2_font_10x20_tr);
@@ -557,7 +555,7 @@ void loop() {
                         break;
                 }
 
-                if (voltage5vRegIn < 8)
+                if (voltage5vRegIn < 8 || (voltage5vRegIn > 15 && voltage5vRegIn < 18))
                     Shutdown();
             }
         }
@@ -571,6 +569,114 @@ void loop() {
 
         if (isCharging && (chargeVoltage12v < 9 || chargeVoltage24v < 18)) {
             digitalWrite(26, LOW);
+
+            fDebugUtils::alert_beep();
+
+            fGUI::SetFont(u8g2_font_10x20_tr);
+            fGUI::PrintCentered("CHG DSCNCT!", 64, 37);
+            fGUI::Flush();
+            fDebugUtils::error_tone();
+
+            long startms = millis();
+
+            while (millis() - startms < 10000 && !digitalRead(18)) {
+                fDebugUtils::error_tone();
+            }
+
+            while (!digitalRead(18)) {
+                fDebugUtils::alert_beep();
+                for (int i = 0; i < 38; i++) {
+                    delay(250);
+                    if (digitalRead(18))
+                        break;
+                }
+            }
+
+            return;
+        }
+
+        if (isCharging && (chargeCurrent12v > 6 || chargeCurrent24v > 6)) {
+            digitalWrite(26, LOW);
+
+            fDebugUtils::alert_beep();
+
+            fGUI::SetFont(u8g2_font_10x20_tr);
+            fGUI::PrintCentered("CHG OVRCNT!", 64, 37);
+            fGUI::Flush();
+            fDebugUtils::error_tone();
+
+            long startms = millis();
+
+            while (millis() - startms < 10000 && !digitalRead(18)) {
+                fDebugUtils::error_tone();
+            }
+
+            while (!digitalRead(18)) {
+                fDebugUtils::alert_beep();
+                for (int i = 0; i < 38; i++) {
+                    delay(250);
+                    if (digitalRead(18))
+                        break;
+                }
+            }
+
+            return;
+        }
+
+        if (isCharging && (chargeCurrent12v < -0.5 || chargeCurrent24v < -0.5)) {
+            digitalWrite(26, LOW);
+
+            fDebugUtils::alert_beep();
+
+            fGUI::SetFont(u8g2_font_10x20_tr);
+            fGUI::PrintCentered("CHG NEGCNT!", 64, 37);
+            fGUI::Flush();
+            fDebugUtils::error_tone();
+
+            long startms = millis();
+
+            while (millis() - startms < 10000 && !digitalRead(18)) {
+                fDebugUtils::error_tone();
+            }
+
+            while (!digitalRead(18)) {
+                fDebugUtils::alert_beep();
+                for (int i = 0; i < 38; i++) {
+                    delay(250);
+                    if (digitalRead(18))
+                        break;
+                }
+            }
+
+            return;
+        }
+
+        if (isCharging && (chargeCurrent12v < 0.2 || chargeCurrent24v < 0.2)) {
+            digitalWrite(26, LOW);
+
+            delay(2000);
+
+            chargeVoltage12v = adc.computeVolts(adc.readADC_SingleEnded(0)) * 11.015;
+            chargeVoltage24v = (analogReadMilliVolts(39) * 10.527 / 1000.0);
+
+            if (chargeVoltage12v > 11.5 && chargeVoltage24v > 24) {
+                fDebugUtils::alert_beep();
+
+                fGUI::SetFont(u8g2_font_10x20_tr);
+                fGUI::PrintCentered("CHG END!", 64, 37);
+                fGUI::Flush();
+
+                fDebugUtils::success_beep();
+                delay(500);
+                fDebugUtils::success_beep();
+                delay(500);
+                fDebugUtils::success_beep();
+                delay(500);
+
+                stopCharging();
+
+                return;
+            }
 
             fDebugUtils::alert_beep();
 
